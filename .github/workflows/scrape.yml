@@ -28,6 +28,6 @@ jobs:
 
     - name: Botu işə sal
       env:
-        TELEGRAM_TOKEN: ${{ secrets.8856342811:AAFi8v3-oZmKgHdNI6bFRnSynC-ZwPhWGNc}}
-        CHAT_ID: ${{ secrets.1600691611 }}
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        CHAT_ID: ${{ secrets.CHAT_ID }}
       run: python bot.py
