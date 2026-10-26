@@ -2,13 +2,14 @@ from playwright.sync_api import sync_playwright
 import requests
 import os
 import time
+import urllib.parse
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 PROXY_URL = os.environ.get("PROXY_URL")
 
 TAGS = ["tiktokmademebuyit", "amazonfinds", "dropshippingfinds", "viralproducts"]
-MIN_VIEWS = 0 # Test üçün 0 etdik, mesaj gələndən sonra 50000 edəcəksiniz
+MIN_VIEWS = 0 # Test üçün
 SEEN_FILE = "seen_videos.txt"
 
 def parse_views(view_str):
@@ -52,8 +53,18 @@ def scrape_tiktok():
     
     with sync_playwright() as p:
         browser_args = {"headless": True}
+        
+        # Proksini Playwright-ın istədiyi formata salırıq
         if PROXY_URL:
-            browser_args["proxy"] = {"server": PROXY_URL}
+            parsed = urllib.parse.urlparse(PROXY_URL)
+            if parsed.username and parsed.password:
+                browser_args["proxy"] = {
+                    "server": f"{parsed.scheme}://{parsed.hostname}:{parsed.port}",
+                    "username": parsed.username,
+                    "password": parsed.password
+                }
+            else:
+                browser_args["proxy"] = {"server": PROXY_URL.rstrip("/")}
             print("🌐 Proksi ilə qoşulur...")
             
         browser = p.chromium.launch(**browser_args)
