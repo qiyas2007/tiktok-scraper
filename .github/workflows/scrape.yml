@@ -1,0 +1,33 @@
+name: TikTok Scraper Bot
+
+on:
+  schedule:
+    # Hər 12 saatdan bir avtomatik işləyir
+    - cron: '0 */12 * * *'
+  workflow_dispatch: # Bu sətir imkan verir ki, istədiyiniz vaxt GitHub-dan əllə işə salasınız
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repozitoriyanı kopyala
+      uses: actions/checkout@v4
+
+    - name: Python quraşdır
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Kitabxanaları yüklə (Dependencies)
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        playwright install chromium
+        playwright install-deps
+
+    - name: Botu işə sal
+      env:
+        TELEGRAM_TOKEN: ${{ secrets.8856342811:AAFi8v3-oZmKgHdNI6bFRnSynC-ZwPhWGNc}}
+        CHAT_ID: ${{ secrets.1600691611 }}
+      run: python bot.py
