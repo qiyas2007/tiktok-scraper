@@ -10,7 +10,7 @@ CHAT_ID = os.environ.get("CHAT_ID")
 TAGS = ["tiktokmademebuyit", "amazonfinds", "dropshippingfinds", "viralproducts"]
 
 # Yeni Funksiya 2: Baxış limiti (50.000-dən az olanları göndərməyəcək)
-MIN_VIEWS = 50000 
+MIN_VIEWS = 0 
 SEEN_FILE = "seen_videos.txt"
 
 def parse_views(view_str):
