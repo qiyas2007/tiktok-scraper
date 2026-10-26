@@ -54,18 +54,29 @@ def scrape_tiktok():
     with sync_playwright() as p:
         browser_args = {"headless": True}
         
-        # Proksini Playwright-ın istədiyi formata salırıq
+        # Proksini tam təmizləyib Playwright-ın istədiyi formata salırıq
         if PROXY_URL:
-            parsed = urllib.parse.urlparse(PROXY_URL)
+            # Dırnaqları, boşluqları və sonluqdakı / işarəsini silirik
+            clean_url = PROXY_URL.strip().strip('"').strip("'").rstrip("/")
+            
+            if not clean_url.startswith("http"):
+                clean_url = "http://" + clean_url
+                
+            parsed = urllib.parse.urlparse(clean_url)
+            
+            # Server ünvanını yaradırıq (istifadəçi adı və şifrəsiz)
+            server_address = f"{parsed.scheme}://{parsed.hostname}"
+            if parsed.port:
+                server_address += f":{parsed.port}"
+                
+            browser_args["proxy"] = {"server": server_address}
+            
+            # Əgər istifadəçi adı və şifrə varsa, ayrıca əlavə edirik
             if parsed.username and parsed.password:
-                browser_args["proxy"] = {
-                    "server": f"{parsed.scheme}://{parsed.hostname}:{parsed.port}",
-                    "username": parsed.username,
-                    "password": parsed.password
-                }
-            else:
-                browser_args["proxy"] = {"server": PROXY_URL.rstrip("/")}
-            print("🌐 Proksi ilə qoşulur...")
+                browser_args["proxy"]["username"] = urllib.parse.unquote(parsed.username)
+                browser_args["proxy"]["password"] = urllib.parse.unquote(parsed.password)
+                
+            print(f"🌐 Proksi ilə qoşulur: {server_address}")
             
         browser = p.chromium.launch(**browser_args)
         context = browser.new_context(viewport={'width': 1920, 'height': 1080}, user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
